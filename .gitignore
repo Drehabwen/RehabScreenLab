@@ -9,12 +9,14 @@ backend/venv/
 # ── Build outputs ──
 **/dist/
 **/.vite/
+frontend/output/
 *.egg-info/
 
 # ── Runtime / IDE ──
 .claude/
 .claw/
 .codex-runtime/
+.playwright-cli/
 .runtime/
 .trae/
 .vscode/
