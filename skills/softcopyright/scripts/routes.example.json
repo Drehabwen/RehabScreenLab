@@ -1,0 +1,12 @@
+[
+  {"file": "r01-tasks.png", "route": "/tasks", "label": "任务页"},
+  {"file": "r02-capture-hub.png", "route": "/capture", "label": "采集中心"},
+  {"file": "r03-gait-capture.png", "route": "/sessions/demo/capture/gait-silhouette", "label": "步态采集"},
+  {"file": "r04-triage.png", "route": "/sessions/demo/triage-result", "label": "初筛结果"},
+  {"file": "r05-standard.png", "route": "/sessions/demo/standard-screening", "label": "标准筛查"},
+  {"file": "r06-adams.png", "route": "/sessions/demo/capture/adams", "label": "Adams 记录"},
+  {"file": "r07-readiness.png", "route": "/sessions/demo/report-readiness", "label": "报告就绪"},
+  {"file": "r08-students.png", "route": "/students", "label": "学生页"},
+  {"file": "r09-reports.png", "route": "/reports", "label": "报告页"},
+  {"file": "r10-profile.png", "route": "/profile", "label": "我的"}
+]
