@@ -39,6 +39,8 @@ PAGES_SUBMITTED = "60"
 
 # ---- 路径 ----
 REPO_ROOT = r"<仓库根目录绝对路径>"
+# 只扫描这些子目录（相对仓库根）。避免把 android/、脚本目录、示例工程纳入源程序。
+SOURCE_INCLUDE_ROOTS = ["backend/app/", "backend/migrations/versions/", "frontend/src/"]
 BASE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".work")
 BUILD = os.path.join(BASE, "build")
 BUILD_SOURCE = os.path.join(BUILD, "source_doc")
