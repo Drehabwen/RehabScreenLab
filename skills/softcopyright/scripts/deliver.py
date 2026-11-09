@@ -8,7 +8,7 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import config as C
 
-DELIVER = os.path.join(C.REPO_ROOT, "materials")
+DELIVER = os.environ.get("DELIVER_DIR") or os.path.join(C.REPO_ROOT, "materials")
 
 NAMES = {
     "source_submit": f"{C.SOFTWARE_NAME}{C.VERSION}_源程序文档_申报60页.pdf",

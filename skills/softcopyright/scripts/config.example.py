@@ -41,6 +41,11 @@ PAGES_SUBMITTED = "60"
 REPO_ROOT = r"<仓库根目录绝对路径>"
 # 只扫描这些子目录（相对仓库根）。避免把 android/、脚本目录、示例工程纳入源程序。
 SOURCE_INCLUDE_ROOTS = ["backend/app/", "backend/migrations/versions/", "frontend/src/"]
+
+# 可选：仓库不是 backend/ + frontend/ 双端结构时（例如单根 src/ 的移动端仓库），
+# 用下面两项自定义"程序开头/结尾"的顺序；不填则用默认双端规则。
+# SOURCE_PRIORITY_FILES = ["src/main.tsx", "src/App.tsx"]
+# SOURCE_DIR_ORDER = ["src/mobile/", "src/api/", "src/store/", "src/components/"]
 BASE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".work")
 BUILD = os.path.join(BASE, "build")
 BUILD_SOURCE = os.path.join(BUILD, "source_doc")

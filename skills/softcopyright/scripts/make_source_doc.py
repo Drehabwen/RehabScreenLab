@@ -167,15 +167,17 @@ def chunk(items, size):
 
 
 ROOTS = getattr(C, "SOURCE_INCLUDE_ROOTS", None)
+PRIO = getattr(C, "SOURCE_PRIORITY_FILES", None)
+ORDER = getattr(C, "SOURCE_DIR_ORDER", None)
 
 
 def main():
     selection = load_selection()
     if selection is None:
-        files = R.collect_files(C.REPO_ROOT, ROOTS)
+        files = R.collect_files(C.REPO_ROOT, ROOTS, PRIO, ORDER)
         mode = "rules"
     else:
-        files = [p for p in R.collect_files(C.REPO_ROOT, ROOTS) if p in selection]
+        files = [p for p in R.collect_files(C.REPO_ROOT, ROOTS, PRIO, ORDER) if p in selection]
         mode = "code_selection.json"
         missing = [p for p in selection if p not in files]
         for p in missing:

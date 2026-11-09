@@ -37,7 +37,12 @@ def main():
         print("已有选择文件，已备份为 code_selection.json.bak；如需按当前扫描重建请加 --force")
         return 0
 
-    files = R.collect_files(C.REPO_ROOT, getattr(C, "SOURCE_INCLUDE_ROOTS", None))
+    files = R.collect_files(
+        C.REPO_ROOT,
+        getattr(C, "SOURCE_INCLUDE_ROOTS", None),
+        getattr(C, "SOURCE_PRIORITY_FILES", None),
+        getattr(C, "SOURCE_DIR_ORDER", None),
+    )
     entries = []
     total_lines = 0
     for i, rel in enumerate(files, 1):

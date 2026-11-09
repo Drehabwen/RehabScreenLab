@@ -76,7 +76,14 @@ def main():
     if os.path.exists(sub):
         report["source_submit_60p"] = check_source_pdf(sub, 60)
     if os.path.exists(full):
-        f = check_source_pdf(full, 298)
+        _expect = 0
+        try:
+            import json as _json
+            _st = _json.load(open(os.path.join(C.BUILD_SOURCE, "source_stats.json"), encoding="utf-8"))
+            _expect = int(_st.get("total_pages") or 0)
+        except Exception:
+            pass
+        f = check_source_pdf(full, _expect)
         f.pop("pages_list", None)
         report["source_full"] = f
     report["manual"] = check_manual_pdf(man)

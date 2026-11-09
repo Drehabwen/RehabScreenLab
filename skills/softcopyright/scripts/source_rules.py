@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 """源码选材的共享规则：文件发现、排除、分组与排序。
 
-被 make_source_doc.py（执行）与 propose_code_selection.py（留痕）共用，
-避免两处规则漂移。
+排序支持两种模式：
+  1) 默认：适配 backend/app + frontend/src 的双端仓库
+  2) 自定义：由 config 提供 SOURCE_PRIORITY_FILES / SOURCE_DIR_ORDER，适配单根仓库（如只有 src/）
 """
 import os
 import re
@@ -10,14 +11,13 @@ import re
 INCLUDE_EXT = {".py", ".ts", ".tsx", ".js", ".jsx", ".css", ".java", ".kt", ".go", ".rs"}
 EXCLUDE_DIR_PARTS = {
     "node_modules", "__pycache__", ".venv", "venv", "dist", "build",
-    ".pytest_cache", ".git", "coverage", ".next", "output",
+    ".pytest_cache", ".git", "coverage", ".next", "output", "test", "tests",
 }
 EXCLUDE_NAME_PATTERNS = (
     r"\.test\.tsx?$", r"\.spec\.tsx?$", r"^setup\.ts$", r"\.d\.ts$",
     r"^vite\.config\.", r"^vitest\.config\.", r"^eslint\.config\.",
 )
 
-# 后端：入口 -> 基础设施 -> API -> 业务；前端：入口 -> 共享层 -> 业务
 BACKEND_PRIORITY = ["backend/app/main.py", "backend/app/__init__.py"]
 BACKEND_DIR_PRIORITY = [
     "backend/app/core/",
@@ -45,13 +45,11 @@ def is_excluded(rel):
     name = parts[-1]
     if any(re.search(pat, name) for pat in EXCLUDE_NAME_PATTERNS):
         return True
-    if "/tests/" in "/" + rel.replace("\\", "/"):
-        return True
     return False
 
 
-def collect_files(repo_root, include_roots=None):
-    """返回按「先分组再排序」排好的相路径列表。"""
+def collect_files(repo_root, include_roots=None, priority_files=None, dir_order=None):
+    """返回按「先分组再排序」排好的相对路径列表。"""
     picked = []
     for base, _, files in os.walk(repo_root):
         for fn in files:
@@ -65,10 +63,18 @@ def collect_files(repo_root, include_roots=None):
             if include_roots and not any(rel.startswith(r) for r in include_roots):
                 continue
             picked.append(rel)
-    return sorted(picked, key=_sort_key)
+    return sorted(picked, key=lambda r: _sort_key(r, priority_files, dir_order))
 
 
-def _sort_key(rel):
+def _sort_key(rel, priority_files=None, dir_order=None):
+    if priority_files:
+        if rel in priority_files:
+            return (0, 0, priority_files.index(rel), rel)
+        for i, pref in enumerate(dir_order or []):
+            if rel.startswith(pref):
+                return (1, i, 0, rel)
+        return (2, 0, 0, rel)
+
     if rel in BACKEND_PRIORITY:
         return (0, 0, BACKEND_PRIORITY.index(rel), rel)
     if rel in FRONTEND_PRIORITY:
@@ -88,17 +94,12 @@ def _sort_key(rel):
 
 def describe_priority(rel):
     """给每个文件一个可读的选材理由，写进 code_selection.json。"""
-    if rel in BACKEND_PRIORITY:
-        return "程序入口/后端初始化，前 30 页起始段"
-    if rel in FRONTEND_PRIORITY:
-        return "前端入口，后 30 页收尾段"
-    for pref in BACKEND_DIR_PRIORITY:
+    if rel in BACKEND_PRIORITY or rel in FRONTEND_PRIORITY:
+        return "程序入口，前 30 页起始段"
+    for pref in BACKEND_DIR_PRIORITY + FRONTEND_DIR_PRIORITY:
         if rel.startswith(pref):
-            return "后端核心：" + pref.split("/")[-2]
-    for pref in FRONTEND_DIR_PRIORITY:
-        if rel.startswith(pref):
-            return "前端核心：" + pref.split("/")[-2]
-    return "其它自研源码"
+            return "核心模块：" + pref.split("/")[-2]
+    return "自研源码"
 
 
 def count_lines(path):
